@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 enum Emotion { happy, normal, sad }
+
+enum ViewState { inputState, selectionState }
 
 class HomePage extends StatefulWidget {
   @override
@@ -8,128 +12,210 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
+  final TextEditingController _inputController = new TextEditingController();
   FocusNode _emotionTextInputFocusNode;
-  double    _actionIconSize;
-  double    _questionTextFontSize;
-  bool      _emotionIconsVisible;
-  String    _questionText;
+
+  double _actionIconSize;
+  double _questionTextFontSize;
+  bool   _emotionIconsEnabled;
+  String _questionText;
+
+  String _inputText;
+
+
 
   @override
   void initState() {
     super.initState();
-    _emotionIconsVisible       = true;
-    _actionIconSize            = 85.0;
-    _questionTextFontSize      = 25.0;
-    _questionText              = "How are you today ?";
+
+    _emotionIconsEnabled = true;
+    _actionIconSize = 85.0;
+    _questionTextFontSize = 25.0;
+    _questionText = "How are you today ?";
     _emotionTextInputFocusNode = new FocusNode();
     _emotionTextInputFocusNode.addListener(_onFocusChange);
+ 
   }
 
-  void _onFocusChange() {
-    debugPrint("Focus: " + _emotionTextInputFocusNode.hasFocus.toString());
+  Future<bool> _onWillPop() async {
+    if (_emotionIconsEnabled) {
+      return true;
+    } else {
+      _onStateChanged(ViewState.selectionState);
+      return false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-          centerTitle: true,
-          title: new Text("Enjoy Work",
-              textAlign: TextAlign.center,
-              style: new TextStyle(
-                //fontFamily: "jose",
-                fontSize: 28.0,
-                color: Colors.black54,
-                fontWeight: FontWeight.w200,
-              )),
-          elevation: 10.0,
-          backgroundColor: Colors.orange),
-      body: new Column(children: <Widget>[
-        new Flexible(
-          child: new Container(
-            margin: new EdgeInsets.only(
-                left: 10.0, right: 10.0, top: 65.0, bottom: 45.0),
-            child: new Text(
-              _questionText,
-              style: new TextStyle(
-                fontFamily: "jose",
-                fontSize: _questionTextFontSize,
-                color: Colors.black54,
-                fontWeight: FontWeight.w800,
+    return new WillPopScope(
+        onWillPop: _onWillPop,
+        child: new Scaffold(
+          appBar: new AppBar(
+              centerTitle: true,
+              title: new Text("Enjoy Work",
+                  textAlign: TextAlign.center,
+                  style: new TextStyle(
+                    //fontFamily: "jose",
+                    fontSize: 28.0,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w200,
+                  )),
+              elevation: 10.0,
+              backgroundColor: Colors.orange),
+          body: new Column(children: <Widget>[
+            new Flexible(
+              child: new Container(
+                margin: new EdgeInsets.only(
+                    left: 10.0, right: 10.0, top: 65.0, bottom: 45.0),
+                child: new Text(
+                  _questionText,
+                  style: new TextStyle(
+                    fontFamily: "jose",
+                    fontSize: _questionTextFontSize,
+                    color: Colors.black54,
+                    fontWeight: FontWeight.w800,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
               ),
-              textAlign: TextAlign.center,
             ),
-          ),
-        ),
-         _emotionIconsVisible
-            ? new Row(
-                children: <Widget>[
-                  new Expanded(
-                    child: new IconButton(
-                      icon: new Icon(Icons.face, color: Colors.green),
-                      iconSize: _actionIconSize,
-                      onPressed: () {
-                        _onEmotionStateSelected(false, Emotion.happy);
-                      },
+            _emotionIconsEnabled
+                ? new Row(
+                    children: <Widget>[
+                      new Expanded(
+                        child: new IconButton(
+                          icon: new Icon(Icons.sentiment_satisfied,
+                              color: Colors.green),
+                          iconSize: _actionIconSize,
+                          onPressed: () {
+                            _onStateChanged(
+                                ViewState.inputState, Emotion.happy);
+                          },
+                        ),
+                      ),
+                      new Expanded(
+                        child: new IconButton(
+                          icon: new Icon(Icons.sentiment_neutral,
+                              color: Colors.orange),
+                          iconSize: _actionIconSize,
+                          onPressed: () {
+                            _onStateChanged(
+                                ViewState.inputState, Emotion.normal);
+                          },
+                        ),
+                      ),
+                      new Expanded(
+                        child: new IconButton(
+                          icon: new Icon(Icons.sentiment_dissatisfied,
+                              color: Colors.red),
+                          iconSize: _actionIconSize,
+                          onPressed: () {
+                            _onStateChanged(ViewState.inputState, Emotion.sad);
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                : new Container(),
+            new Flexible(
+              child: new AnimatedOpacity(
+                opacity: !_emotionIconsEnabled ? 1.0 : 0.0,
+                duration: new Duration(milliseconds: 500),
+                child: new Container(
+                    margin: new EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: new Center(
+                      
+                        heightFactor: 3.0,
+                        child: new TextField(
+                          focusNode: _emotionTextInputFocusNode,
+                          controller: _inputController,
+                         onChanged: (String input){
+                           setState((){
+                            _inputText = input;
+                           });
+                         },
+                          keyboardType: TextInputType.text,
+                          style: new TextStyle(
+                            fontSize: 18.0,
+                            color: Colors.black54,
+                            fontFamily: "jose", 
+                          ),
+                        ))),
+              ),
+            ),
+            new Flexible(
+              child: new AnimatedOpacity(
+                opacity: !_emotionIconsEnabled ? 1.0 : 0.0,
+                duration: new Duration(milliseconds: 1000),
+                child: new Container(
+                  child: new RaisedButton.icon(
+                    icon: new Icon(
+                      Icons.done,
+                      color: Colors.lightGreen,
+                      size: 30.0,
                     ),
+                    label: new Text(
+                      "submit answer",
+                      style: new TextStyle(
+                        fontWeight: FontWeight.w200,
+                        fontSize: 16.0,
+                        color: Colors.black87,
+                        fontFamily: "jose",
+                      ),
+                    ),
+                    color: Colors.orangeAccent,
+                    elevation: 4.0,
+                    splashColor: Colors.blueGrey,
+                    highlightColor: Colors.yellowAccent,
+                    onPressed: () {},
                   ),
-                  new Expanded(
-                    child: new IconButton(
-                      icon: new Icon(Icons.face, color: Colors.orange),
-                      iconSize: _actionIconSize,
-                      onPressed: () {
-                        _onEmotionStateSelected(false, Emotion.normal);
-                      },
-                    ),
-                  ),
-                  new Expanded(
-                    child: new IconButton(
-                      icon: new Icon(Icons.face, color: Colors.red),
-                      iconSize: _actionIconSize,
-                      onPressed: () {
-                        _onEmotionStateSelected(false, Emotion.sad);
-                      },
-                    ),
-                  ),
-                ],
-              )
-            : new Container(),
-        new Flexible(
-          child: new Container(
-              margin: new EdgeInsets.only(left: 20.0, right: 20.0),
-              child: new Center(
-                  heightFactor: 4.0,
-                  child: new TextField(
-                    focusNode:_emotionTextInputFocusNode,
-                    style: new TextStyle(
-                      fontSize: 18.0,
-                      color: Colors.black54,
-                      fontFamily: "jose",
-                    ),
-                  ))),
-        ),
-      ]),
-    );
+                ),
+              ),
+            ),
+          ]),
+        ));
   }
 
-  void _onEmotionStateSelected(bool visibility, Emotion emotion) {
-    setState((){      
-      _emotionIconsVisible  = false;
-      _questionTextFontSize = 20.0;
-
-      if (emotion == Emotion.happy) {
-        _questionText = "That's great ! Why do you feel like that?";
-      } else if (emotion == Emotion.normal) {
-        _questionText = "That's ok... Why do you feel like that?";
+  void _onStateChanged(ViewState viewState, [Emotion emotion]) {
+    setState(() {
+      if (viewState == ViewState.inputState) {
+        _setAsInputState(emotion);
       } else {
-        _questionText = "That's sad :(  Why do you feel like that?";
+        _setAsSelectionState();
       }
-      FocusScope.of(context).requestFocus(_emotionTextInputFocusNode);
     });
   }
 
+  void _setAsInputState(Emotion emotion) {
+    _emotionIconsEnabled = false;
+    _questionTextFontSize = 20.0;
+
+    if (emotion == Emotion.happy) {
+      _questionText = "That's great ! Why do you feel like that?";
+    } else if (emotion == Emotion.normal) {
+      _questionText = "That's ok... Why do you feel like that?";
+    } else {
+      _questionText = "That's sad :(  Why do you feel like that?";
+    }
+    FocusScope.of(context).requestFocus(_emotionTextInputFocusNode);
+  }
+
+  void _setAsSelectionState() {
+    _emotionIconsEnabled = true;
+    _questionText = "How are you today ?";
+    _emotionTextInputFocusNode.unfocus();
+    _questionTextFontSize = 25.0;
+    _inputController.clear();
+    _inputText = "";
+  }
+
+  void _onFocusChange() {
+    if(_emotionIconsEnabled) _emotionTextInputFocusNode.unfocus();
+  }
+
   //todo route to next page
-   /*_routeToSummaryPage(BuildContext context, String route) {
+  /*_routeToSummaryPage(BuildContext context, String route) {
     Navigator.pushNamed(context, route);
   }*/
 }
