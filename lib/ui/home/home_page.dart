@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'home_presenter.dart';
 
 enum Emotion { happy, normal, sad }
 
@@ -11,19 +11,23 @@ class HomePage extends StatefulWidget {
   State createState() => new HomePageState();
 }
 
-class HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> implements HomePageContract {
+  HomePagePresenter _presenter;
+
   TextEditingController _inputController;
   FocusNode _emotionTextInputFocusNode;
 
   double _actionIconSize;
   double _questionTextFontSize;
-  bool   _emotionIconsEnabled;
+  bool _emotionIconsEnabled;
   String _questionText;
+  String _currentEmotionState;
 
   @override
   void initState() {
     super.initState();
 
+    _presenter = new HomePagePresenter(this);
     _emotionIconsEnabled = true;
     _actionIconSize = 85.0;
     _questionTextFontSize = 25.0;
@@ -86,7 +90,7 @@ class HomePageState extends State<HomePage> {
                           iconSize: _actionIconSize,
                           onPressed: () {
                             _onStateChanged(
-                                ViewState.inputState, Emotion.happy);
+                                ViewState.inputState, context, Emotion.happy);
                           },
                         ),
                       ),
@@ -97,7 +101,7 @@ class HomePageState extends State<HomePage> {
                           iconSize: _actionIconSize,
                           onPressed: () {
                             _onStateChanged(
-                                ViewState.inputState, Emotion.normal);
+                                ViewState.inputState, context, Emotion.normal);
                           },
                         ),
                       ),
@@ -107,7 +111,8 @@ class HomePageState extends State<HomePage> {
                               color: Colors.red),
                           iconSize: _actionIconSize,
                           onPressed: () {
-                            _onStateChanged(ViewState.inputState, Emotion.sad);
+                            _onStateChanged(
+                                ViewState.inputState, context, Emotion.sad);
                           },
                         ),
                       ),
@@ -117,7 +122,7 @@ class HomePageState extends State<HomePage> {
             new Flexible(
               child: new AnimatedOpacity(
                 opacity: !_emotionIconsEnabled ? 1.0 : 0.0,
-                duration: new Duration(milliseconds: 500),
+                duration: new Duration(milliseconds: 300),
                 child: new Container(
                     margin: new EdgeInsets.only(left: 20.0, right: 20.0),
                     child: new Center(
@@ -143,7 +148,7 @@ class HomePageState extends State<HomePage> {
             new Flexible(
               child: new AnimatedOpacity(
                 opacity: !_emotionIconsEnabled ? 1.0 : 0.0,
-                duration: new Duration(milliseconds: 1000),
+                duration: new Duration(milliseconds: 500),
                 child: new Container(
                   child: new RaisedButton.icon(
                     icon: new Icon(
@@ -175,17 +180,18 @@ class HomePageState extends State<HomePage> {
         ));
   }
 
-  void _onStateChanged(ViewState viewState, [Emotion emotion]) {
+  void _onStateChanged(ViewState viewState,
+      [BuildContext buildContext, Emotion emotion]) {
     setState(() {
       if (viewState == ViewState.inputState) {
-        _setAsInputState(emotion);
+        _setAsInputState(emotion, buildContext);
       } else {
         _setAsSelectionState();
       }
     });
   }
 
-  void _setAsInputState(Emotion emotion) {
+  void _setAsInputState(Emotion emotion, BuildContext buildContext) {
     _emotionIconsEnabled = false;
     _questionTextFontSize = 20.0;
 
@@ -196,7 +202,9 @@ class HomePageState extends State<HomePage> {
     } else {
       _questionText = "That's sad :(  Why do you feel like that?";
     }
-    FocusScope.of(context).requestFocus(_emotionTextInputFocusNode);
+    _currentEmotionState = emotion.toString();
+
+    FocusScope.of(buildContext).requestFocus(_emotionTextInputFocusNode);
   }
 
   void _setAsSelectionState() {
@@ -211,8 +219,9 @@ class HomePageState extends State<HomePage> {
     if (_emotionIconsEnabled) _emotionTextInputFocusNode.unfocus();
   }
 
+  @override
   void onSubmit() {
-    _inputController.text;
+    _presenter.insertEmotionState(_inputController.text, _currentEmotionState);
   }
 
   @override
@@ -220,9 +229,4 @@ class HomePageState extends State<HomePage> {
     _emotionTextInputFocusNode.removeListener(_onFocusChange);
     super.dispose();
   }
-
-  //todo route to next page
-  /*_routeToSummaryPage(BuildContext context, String route) {
-    Navigator.pushNamed(context, route);
-  }*/
 }
