@@ -12,17 +12,13 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  final TextEditingController _inputController = new TextEditingController();
+  TextEditingController _inputController;
   FocusNode _emotionTextInputFocusNode;
 
   double _actionIconSize;
   double _questionTextFontSize;
   bool   _emotionIconsEnabled;
   String _questionText;
-
-  String _inputText;
-
-
 
   @override
   void initState() {
@@ -34,7 +30,7 @@ class HomePageState extends State<HomePage> {
     _questionText = "How are you today ?";
     _emotionTextInputFocusNode = new FocusNode();
     _emotionTextInputFocusNode.addListener(_onFocusChange);
- 
+    _inputController = new TextEditingController();
   }
 
   Future<bool> _onWillPop() async {
@@ -73,7 +69,7 @@ class HomePageState extends State<HomePage> {
                   style: new TextStyle(
                     fontFamily: "jose",
                     fontSize: _questionTextFontSize,
-                    color: Colors.black54,
+                    color: Colors.black87,
                     fontWeight: FontWeight.w800,
                   ),
                   textAlign: TextAlign.center,
@@ -125,21 +121,21 @@ class HomePageState extends State<HomePage> {
                 child: new Container(
                     margin: new EdgeInsets.only(left: 20.0, right: 20.0),
                     child: new Center(
-                      
                         heightFactor: 3.0,
                         child: new TextField(
                           focusNode: _emotionTextInputFocusNode,
                           controller: _inputController,
-                         onChanged: (String input){
-                           setState((){
-                            _inputText = input;
-                           });
-                         },
                           keyboardType: TextInputType.text,
                           style: new TextStyle(
-                            fontSize: 18.0,
-                            color: Colors.black54,
-                            fontFamily: "jose", 
+                              fontSize: 16.0,
+                              // color: Colors.black54,
+                              // fontFamily: "jose",
+                              color: Colors.black54,
+                              fontWeight: FontWeight.w400,
+                              textBaseline: TextBaseline.ideographic),
+                          decoration: new InputDecoration(
+                            prefixIcon: new Icon(Icons.create),
+                            isDense: true,
                           ),
                         ))),
               ),
@@ -159,7 +155,7 @@ class HomePageState extends State<HomePage> {
                       "submit answer",
                       style: new TextStyle(
                         fontWeight: FontWeight.w200,
-                        fontSize: 16.0,
+                        fontSize: 14.0,
                         color: Colors.black87,
                         fontFamily: "jose",
                       ),
@@ -168,7 +164,9 @@ class HomePageState extends State<HomePage> {
                     elevation: 4.0,
                     splashColor: Colors.blueGrey,
                     highlightColor: Colors.yellowAccent,
-                    onPressed: () {},
+                    onPressed: () {
+                      onSubmit();
+                    },
                   ),
                 ),
               ),
@@ -207,11 +205,20 @@ class HomePageState extends State<HomePage> {
     _emotionTextInputFocusNode.unfocus();
     _questionTextFontSize = 25.0;
     _inputController.clear();
-    _inputText = "";
   }
 
   void _onFocusChange() {
-    if(_emotionIconsEnabled) _emotionTextInputFocusNode.unfocus();
+    if (_emotionIconsEnabled) _emotionTextInputFocusNode.unfocus();
+  }
+
+  void onSubmit() {
+    _inputController.text;
+  }
+
+  @override
+  void dispose() {
+    _emotionTextInputFocusNode.removeListener(_onFocusChange);
+    super.dispose();
   }
 
   //todo route to next page
