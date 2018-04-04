@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'helper/navigation_manager.dart';
 import 'ui/home/home_page.dart';
-import 'ui/summary/SummaryPage.dart';
 
 void main() => runApp(new EnjoyWork());
 
@@ -10,9 +10,6 @@ class EnjoyWork extends StatelessWidget {
     return new MaterialApp(
         title: "Enjoy Work",
         home: new HomePage(),
-        routes: <String, WidgetBuilder>{
-        '/SummaryPage': (BuildContext context) =>new SummaryPage()
-        });
+        routes: NavigationManager.routeBuilder);
   }
 }
-

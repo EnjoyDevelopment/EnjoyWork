@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../../data/database/model/user_state.dart';
+import '../../helper/navigation_manager.dart';
 import 'home_presenter.dart';
 
 enum Emotion { happy, normal, sad }
@@ -23,6 +25,8 @@ class HomePageState extends State<HomePage> implements HomePageContract {
   String _questionText;
   String _currentEmotionState;
 
+  MaterialAccentColor _mainThemeColour;
+
   @override
   void initState() {
     super.initState();
@@ -30,11 +34,12 @@ class HomePageState extends State<HomePage> implements HomePageContract {
     _presenter = new HomePagePresenter(this);
     _emotionIconsEnabled = true;
     _actionIconSize = 85.0;
-    _questionTextFontSize = 25.0;
+    _questionTextFontSize = 28.0;
     _questionText = "How are you today ?";
     _emotionTextInputFocusNode = new FocusNode();
     _emotionTextInputFocusNode.addListener(_onFocusChange);
     _inputController = new TextEditingController();
+    _mainThemeColour =  Colors.orangeAccent;
   }
 
   Future<bool> _onWillPop() async {
@@ -62,7 +67,7 @@ class HomePageState extends State<HomePage> implements HomePageContract {
                     fontWeight: FontWeight.w200,
                   )),
               elevation: 10.0,
-              backgroundColor: Colors.orange),
+              backgroundColor: _mainThemeColour),
           body: new Column(children: <Widget>[
             new Flexible(
               child: new Container(
@@ -165,9 +170,9 @@ class HomePageState extends State<HomePage> implements HomePageContract {
                         fontFamily: "jose",
                       ),
                     ),
-                    color: Colors.orangeAccent,
+                    color: _mainThemeColour,
                     elevation: 4.0,
-                    splashColor: Colors.blueGrey,
+                    splashColor: _mainThemeColour,
                     highlightColor: Colors.yellowAccent,
                     onPressed: () {
                       onSubmit();
@@ -211,7 +216,7 @@ class HomePageState extends State<HomePage> implements HomePageContract {
     _emotionIconsEnabled = true;
     _questionText = "How are you today ?";
     _emotionTextInputFocusNode.unfocus();
-    _questionTextFontSize = 25.0;
+    _questionTextFontSize = 28.0;
     _inputController.clear();
   }
 
@@ -219,9 +224,44 @@ class HomePageState extends State<HomePage> implements HomePageContract {
     if (_emotionIconsEnabled) _emotionTextInputFocusNode.unfocus();
   }
 
-  @override
   void onSubmit() {
     _presenter.insertEmotionState(_inputController.text, _currentEmotionState);
+  }
+
+  @override
+  void onSubmitSuccess() {
+    print("Submit success");
+    NavigationManager.navigate(context, NavigationManager.summaryPageRoute);
+  }
+
+  @override
+  void onSubmitError(String error) {
+    showAlertDialog("Error - " + error);
+  }
+
+  void showAlertDialog(String value) {
+    AlertDialog dialog = new AlertDialog(
+      content: new Text(
+        value,
+        style: new TextStyle(
+          fontFamily: "roboto",
+          fontSize: 16.0,
+          color: Colors.black87,
+        ),
+      ),
+      actions: <Widget>[
+        new FlatButton(
+          child: const Text("Ok"),
+          onPressed: () => Navigator.pop(context),
+        )
+      ],
+    );
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return dialog;
+        });
   }
 
   @override
