@@ -1,3 +1,5 @@
+import '../tables.dart';
+
 class UserState {
   String _emotionMessage;
   String _emotionState;
@@ -6,9 +8,9 @@ class UserState {
   UserState(this._emotionMessage, this._emotionState, this._timeStamp);
 
   UserState.map(Map map) {
-    this._emotionMessage = map['emotionmessage'];
-    this._emotionState = map['emotionstate'];
-    this._timeStamp = map['timestamp'];
+    this._emotionMessage = map[UserTable.emotionMessageCol];
+    this._emotionState = map[UserTable.emotionStateCol];
+    this._timeStamp = map[UserTable.emotionTimeStampCol];
   }
 
   String get emotionmessage => _emotionMessage;

@@ -26,21 +26,20 @@ class AppDatabaseHelper implements DatabaseHelper {
   @override
   Future<void> saveUserState(UserState userState) async {
     var dbClient = await database;
-    await dbClient.insert(Tables.userStateTable, userState.toMap());
+    await dbClient.insert(UserTable.userStateTable, userState.toMap());
   }
 
   @override
   Future<int> deleteUserState(UserState userState) async {
     var dbClient = await database;
-    int response = await dbClient.delete(Tables.userStateTable);
+    int response = await dbClient.delete(UserTable.userStateTable);
     return response;
   }
 
   @override
-  Future<List<Map<String, String>>> retrieveUserState() async {
+  Future<List<Map<String, dynamic>>> retrieveUserState() async {
     var dbClient = await database;
-    List<Map> list =
-        await dbClient.rawQuery("SELECT * FROM  ${Tables.userStateTable}");
+    var  list = await dbClient.rawQuery("SELECT * FROM  ${UserTable.userStateTable}");
     return list;
   }
 }

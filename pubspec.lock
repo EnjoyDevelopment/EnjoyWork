@@ -137,6 +137,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.1.1"
+  intl:
+    dependency: "direct main"
+    description:
+      name: intl
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.15.4"
   io:
     dependency: transitive
     description:
@@ -263,6 +270,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.28.0"
+  quiver_hashcode:
+    dependency: transitive
+    description:
+      name: quiver_hashcode
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   shelf:
     dependency: transitive
     description:
@@ -366,6 +380,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.12.32+2"
+  tuple:
+    dependency: "direct main"
+    description:
+      name: tuple
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.1"
   typed_data:
     dependency: transitive
     description:
@@ -387,6 +408,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+  video_player:
+    dependency: "direct main"
+    description:
+      name: video_player
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1"
   watcher:
     dependency: transitive
     description:
@@ -410,4 +438,4 @@ packages:
     version: "2.1.13"
 sdks:
   dart: ">=2.0.0-dev.35 <=2.0.0-edge.c080951d45e79cd25df98036c4be835b284a269c"
-  flutter: ">=0.1.4 <2.0.0"
+  flutter: ">=0.2.5 <2.0.0"

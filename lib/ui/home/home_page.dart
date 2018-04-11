@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../../data/database/model/user_state.dart';
 import '../../helper/navigation_manager.dart';
-import 'home_presenter.dart';
+import '../base/base_contract.dart';
+import '../base/presenter_factory_producer.dart';
+import '../common/components.dart/app_bar.dart';
+import 'home_page_presenter.dart';
 
 enum Emotion { happy, normal, sad }
 
@@ -16,6 +18,7 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> implements HomePageContract {
   HomePagePresenter _presenter;
 
+  var appBarComponent = new AppBarComponent();
   TextEditingController _inputController;
   FocusNode _emotionTextInputFocusNode;
 
@@ -30,16 +33,16 @@ class HomePageState extends State<HomePage> implements HomePageContract {
   @override
   void initState() {
     super.initState();
-
-    _presenter = new HomePagePresenter(this);
+    _presenter =
+       PresenterFactoryProducer.getPresenter(ViewType.homeScreen, this);
     _emotionIconsEnabled = true;
-    _actionIconSize = 85.0;
+    _actionIconSize = 90.0;
     _questionTextFontSize = 28.0;
     _questionText = "How are you today ?";
     _emotionTextInputFocusNode = new FocusNode();
     _emotionTextInputFocusNode.addListener(_onFocusChange);
     _inputController = new TextEditingController();
-    _mainThemeColour =  Colors.orangeAccent;
+    _mainThemeColour = Colors.orangeAccent;
   }
 
   Future<bool> _onWillPop() async {
@@ -56,73 +59,64 @@ class HomePageState extends State<HomePage> implements HomePageContract {
     return new WillPopScope(
         onWillPop: _onWillPop,
         child: new Scaffold(
-          appBar: new AppBar(
-              centerTitle: true,
-              title: new Text("Enjoy Work",
-                  textAlign: TextAlign.center,
-                  style: new TextStyle(
-                    //fontFamily: "jose",
-                    fontSize: 28.0,
-                    color: Colors.black54,
-                    fontWeight: FontWeight.w200,
-                  )),
-              elevation: 10.0,
-              backgroundColor: _mainThemeColour),
+          appBar: appBarComponent.getComponent(),
           body: new Column(children: <Widget>[
             new Flexible(
               child: new Container(
                 margin: new EdgeInsets.only(
-                    left: 10.0, right: 10.0, top: 65.0, bottom: 45.0),
+                    left: 10.0, right: 10.0, top: 75.0, bottom: 45.0),
                 child: new Text(
                   _questionText,
                   style: new TextStyle(
-                    fontFamily: "jose",
+                    // fontFamily: "jose",
                     fontSize: _questionTextFontSize,
-                    color: Colors.black87,
-                    fontWeight: FontWeight.w800,
+                    color: Colors.black45,
+                    fontWeight: FontWeight.w300,
                   ),
                   textAlign: TextAlign.center,
                 ),
               ),
             ),
             _emotionIconsEnabled
-                ? new Row(
-                    children: <Widget>[
-                      new Expanded(
-                        child: new IconButton(
-                          icon: new Icon(Icons.sentiment_satisfied,
-                              color: Colors.green),
-                          iconSize: _actionIconSize,
-                          onPressed: () {
-                            _onStateChanged(
-                                ViewState.inputState, context, Emotion.happy);
-                          },
+                ? new Opacity(
+                    opacity: 0.85,
+                    child: new Row(
+                      children: <Widget>[
+                        new Expanded(
+                          child: new IconButton(
+                            icon: new Icon(Icons.sentiment_satisfied,
+                                color: Colors.green),
+                            iconSize: _actionIconSize,
+                            onPressed: () {
+                              _onStateChanged(
+                                  ViewState.inputState, context, Emotion.happy);
+                            },
+                          ),
                         ),
-                      ),
-                      new Expanded(
-                        child: new IconButton(
-                          icon: new Icon(Icons.sentiment_neutral,
-                              color: Colors.orange),
-                          iconSize: _actionIconSize,
-                          onPressed: () {
-                            _onStateChanged(
-                                ViewState.inputState, context, Emotion.normal);
-                          },
+                        new Expanded(
+                          child: new IconButton(
+                            icon: new Icon(Icons.sentiment_neutral,
+                                color: Colors.orange),
+                            iconSize: _actionIconSize,
+                            onPressed: () {
+                              _onStateChanged(ViewState.inputState, context,
+                                  Emotion.normal);
+                            },
+                          ),
                         ),
-                      ),
-                      new Expanded(
-                        child: new IconButton(
-                          icon: new Icon(Icons.sentiment_dissatisfied,
-                              color: Colors.red),
-                          iconSize: _actionIconSize,
-                          onPressed: () {
-                            _onStateChanged(
-                                ViewState.inputState, context, Emotion.sad);
-                          },
+                        new Expanded(
+                          child: new IconButton(
+                            icon: new Icon(Icons.sentiment_dissatisfied,
+                                color: Colors.red),
+                            iconSize: _actionIconSize,
+                            onPressed: () {
+                              _onStateChanged(
+                                  ViewState.inputState, context, Emotion.sad);
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  )
+                      ],
+                    ))
                 : new Container(),
             new Flexible(
               child: new AnimatedOpacity(
@@ -166,11 +160,11 @@ class HomePageState extends State<HomePage> implements HomePageContract {
                       style: new TextStyle(
                         fontWeight: FontWeight.w200,
                         fontSize: 14.0,
-                        color: Colors.black87,
+                        color: const Color(0xFFFFFFFF),
                         fontFamily: "jose",
                       ),
                     ),
-                    color: _mainThemeColour,
+                    color: const Color(0xFFE52D2D),
                     elevation: 4.0,
                     splashColor: _mainThemeColour,
                     highlightColor: Colors.yellowAccent,
@@ -216,7 +210,7 @@ class HomePageState extends State<HomePage> implements HomePageContract {
     _emotionIconsEnabled = true;
     _questionText = "How are you today ?";
     _emotionTextInputFocusNode.unfocus();
-    _questionTextFontSize = 28.0;
+    _questionTextFontSize = 26.0;
     _inputController.clear();
   }
 
@@ -226,12 +220,15 @@ class HomePageState extends State<HomePage> implements HomePageContract {
 
   void onSubmit() {
     _presenter.insertEmotionState(_inputController.text, _currentEmotionState);
+
+     // NavigationManager.navigate(context, NavigationManager.videoPageRoute );
+        //_setAsSelectionState();
   }
 
   @override
   void onSubmitSuccess() {
-    print("Submit success");
-    NavigationManager.navigate(context, NavigationManager.summaryPageRoute);
+    NavigationManager.navigate(context, NavigationManager.videoPageRoute );
+        _setAsSelectionState();
   }
 
   @override
