@@ -227,7 +227,7 @@ class HomePageState extends State<HomePage> implements HomePageContract {
 
   @override
   void onSubmitSuccess() {
-    NavigationManager.navigate(context, NavigationManager.videoPageRoute );
+    NavigationManager.navigate(context, NavigationManager.summaryPageRoute);
         _setAsSelectionState();
   }
 
@@ -253,12 +253,6 @@ class HomePageState extends State<HomePage> implements HomePageContract {
         )
       ],
     );
-
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return dialog;
-        });
   }
 
   @override

@@ -13,9 +13,10 @@ dependencies:
   intl: "^0.15.4"
   tuple: "^1.0.1"
   video_player: "^0.4.1"
+  
 
 dev_dependencies:
-  flutter_test:
+   flutter_test:
     sdk: flutter
 
 

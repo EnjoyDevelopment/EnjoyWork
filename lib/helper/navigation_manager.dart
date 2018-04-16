@@ -9,7 +9,7 @@ class NavigationManager {
   static Map get routeBuilder {
     var routes = <String, WidgetBuilder>{
       summaryPageRoute: (BuildContext context) => new SummaryPage(),
-      videoPageRoute: (BuildContext context) => new VideoPage()
+     videoPageRoute: (BuildContext context) => new VideoPage()
     };
 
     return routes;
